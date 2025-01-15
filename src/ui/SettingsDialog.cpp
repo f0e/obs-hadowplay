@@ -42,6 +42,16 @@ SettingsDialog::SettingsDialog() : QDialog(nullptr), ui(new Ui::SettingsDialog)
 	connect(ui->delete_exception_button, &QPushButton::pressed, this,
 		&SettingsDialog::delete_exclusion_pressed);
 
+	connect(ui->browse_script_button, &QPushButton::pressed, this,
+		&SettingsDialog::browse_script_pressed);
+
+	connect(ui->enable_post_save_script_checkbox, &QCheckBox::stateChanged,
+		[this](int state) {
+			bool enabled = state == Qt::Checked;
+			ui->post_save_script_path->setEnabled(enabled);
+			ui->browse_script_button->setEnabled(enabled);
+		});
+
 	connect(ui->exceptions_list, &QListWidget::itemSelectionChanged, this,
 		&SettingsDialog::exceptions_list_selected_changed);
 
@@ -88,6 +98,16 @@ void SettingsDialog::showEvent(QShowEvent *event)
 
 	ui->show_desktop_notif_checkbox->setChecked(
 		Config::Inst().m_show_desktop_notif);
+
+	bool post_save_script_enabled = Config::Inst().m_post_save_script;
+
+	ui->enable_post_save_script_checkbox->setChecked(
+		post_save_script_enabled);
+	ui->post_save_script_path->setEnabled(post_save_script_enabled);
+	ui->browse_script_button->setEnabled(post_save_script_enabled);
+
+	ui->post_save_script_path->setText(
+		QString::fromStdString(Config::Inst().m_post_save_script_path));
 
 	ui->exceptions_list->clear();
 	for (size_t i = 0; i < Config::Inst().m_exclusions.size(); ++i) {
@@ -139,6 +159,12 @@ void SettingsDialog::ApplyConfig()
 
 	Config::Inst().m_show_desktop_notif =
 		this->ui->show_desktop_notif_checkbox->isChecked();
+
+	Config::Inst().m_post_save_script =
+		this->ui->enable_post_save_script_checkbox->isChecked();
+
+	Config::Inst().m_post_save_script_path =
+		this->ui->post_save_script_path->text().toStdString();
 
 	int count = this->ui->exceptions_list->count();
 
@@ -199,4 +225,27 @@ void SettingsDialog::exceptions_list_selected_changed()
 void SettingsDialog::button_box_accepted()
 {
 	this->ApplyConfig();
+}
+
+#include <QFileDialog>
+
+void SettingsDialog::browse_script_pressed()
+{
+	QString fileName = QFileDialog::getOpenFileName(
+		this,
+		obs_module_text("OBSHadowplay.Settings.PostSaveScript.Browse"),
+		QString(),
+#ifdef _WIN32
+		obs_module_text("OBSHadowplay.Settings.PostSaveScript.Filter") +
+			QString(" (*.bat *.cmd *.exe);;") +
+			obs_module_text("All Files") + QString(" (*.*)"));
+#else
+		obs_module_text("OBSHadowplay.Settings.PostSaveScript.Filter") +
+			QString(" (*.sh);;") + obs_module_text("All Files") +
+			QString(" (*.*)"));
+#endif
+
+	if (!fileName.isEmpty()) {
+		ui->post_save_script_path->setText(fileName);
+	}
 }

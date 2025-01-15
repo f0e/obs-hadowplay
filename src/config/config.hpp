@@ -13,6 +13,8 @@
 #define CONFIG_INCLUDE_SCREENSHOTS "IncludeScreenshots"
 #define CONFIG_EXCLUSION_ITEM_STRING "AppName"
 #define CONFIG_EXCLUSIONS "Exclusions"
+#define CONFIG_POST_SAVE_SCRIPT "PostSaveScript"
+#define CONFIG_POST_SAVE_SCRIPT_PATH "PostSaveScriptPath"
 
 #pragma region BackwardsCompatability
 #define CONFIG_FOLDER_NAME_AS_PREFIX "FolderNameAsPrefix"
@@ -60,4 +62,6 @@ public:
 	// Notification settings
 	bool m_play_notif_sound = true;
 	bool m_show_desktop_notif = true;
+	bool m_post_save_script = false;
+	std::string m_post_save_script_path;
 };

@@ -28,6 +28,7 @@ private slots:
 	void delete_exclusion_pressed();
 	void exceptions_list_selected_changed();
 	void button_box_accepted();
+	void browse_script_pressed();
 
 private:
 	Ui::SettingsDialog *ui;

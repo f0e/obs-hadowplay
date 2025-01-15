@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>544</width>
-    <height>641</height>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -59,11 +59,11 @@
            <property name="text">
             <string/>
            </property>
+           <property name="themeID" stdset="0">
+            <string>addIconSmall</string>
+           </property>
            <property name="toolButton" stdset="0">
             <bool>true</bool>
-           </property>
-           <property name="class" stdset="0">
-            <string notr="true">icon-plus</string>
            </property>
           </widget>
          </item>
@@ -75,11 +75,11 @@
            <property name="text">
             <string/>
            </property>
+           <property name="themeID" stdset="0">
+            <string>cogsIcon</string>
+           </property>
            <property name="toolButton" stdset="0">
             <bool>true</bool>
-           </property>
-           <property name="class" stdset="0">
-            <string notr="true">icon-cogs</string>
            </property>
           </widget>
          </item>
@@ -91,11 +91,11 @@
            <property name="text">
             <string/>
            </property>
+           <property name="themeID" stdset="0">
+            <string>removeIconSmall</string>
+           </property>
            <property name="toolButton" stdset="0">
             <bool>true</bool>
-           </property>
-           <property name="class" stdset="0">
-            <string notr="true">icon-trash</string>
            </property>
           </widget>
          </item>
@@ -321,6 +321,46 @@
          <string>OBSHadowplay.Settings.Notifications.PlayNotificationSound</string>
         </property>
        </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item>
+    <widget class="QGroupBox" name="group_box_post_save">
+     <property name="title">
+      <string>OBSHadowplay.Settings.PostSaveScript</string>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_post_save">
+      <item>
+       <widget class="QCheckBox" name="enable_post_save_script_checkbox">
+        <property name="text">
+         <string>OBSHadowplay.Settings.PostSaveScript.Enabled</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="horizontalLayout_3">
+        <item>
+         <widget class="QLineEdit" name="post_save_script_path">
+          <property name="readOnly">
+           <bool>true</bool>
+          </property>
+          <property name="placeholderText">
+           <string>OBSHadowplay.Settings.PostSaveScript.SelectScript</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QPushButton" name="browse_script_button">
+          <property name="toolTip">
+           <string>OBSHadowplay.Settings.PostSaveScript.Browse</string>
+          </property>
+          <property name="text">
+           <string>Browse</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
       </item>
      </layout>
     </widget>

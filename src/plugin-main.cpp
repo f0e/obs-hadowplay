@@ -219,6 +219,10 @@ std::string obs_hadowplay_move_output_file(const std::string &original_filepath,
 			original_filepath.c_str(), new_filepath.c_str());
 	}
 
+	if (Config::Inst().m_post_save_script) {
+		obs_hadowplay_run_post_save_script(new_filepath);
+	}
+
 	return new_filepath;
 }
 
