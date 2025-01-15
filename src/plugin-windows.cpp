@@ -352,4 +352,38 @@ bool obs_hadowplay_is_exe_excluded(const char *exe)
 
 	return false;
 }
+
+std::wstring string_to_wstring(const std::string &str)
+{
+	return std::wstring(str.begin(), str.end());
+}
+
+bool obs_hadowplay_run_post_save_script(const std::string &filepath)
+{
+	std::wstring wide_filepath = string_to_wstring(filepath);
+	std::wstring wide_script_filepath =
+		string_to_wstring(Config::Inst().m_post_save_script_path);
+
+	std::wstring command =
+		L"\"" + wide_script_filepath + L"\" \"" + wide_filepath + L"\"";
+
+	STARTUPINFOW si = {0};
+	PROCESS_INFORMATION pi = {0};
+	si.cb = sizeof(STARTUPINFOW);
+	si.dwFlags = STARTF_USESHOWWINDOW;
+	si.wShowWindow = SW_HIDE; // don't show the script window
+
+	if (!CreateProcessW(NULL, &command[0], NULL, NULL, FALSE,
+			    CREATE_NO_WINDOW, NULL, NULL, &si, &pi)) {
+		return false;
+	}
+
+	// wait for the script to finish (optional)
+	WaitForSingleObject(pi.hProcess, INFINITE);
+
+	// clean up
+	CloseHandle(pi.hProcess);
+	CloseHandle(pi.hThread);
+	return true;
+}
 #endif

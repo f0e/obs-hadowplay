@@ -19,6 +19,8 @@ EXTERNC void obs_hadowplay_play_notif_sound();
 
 EXTERNC bool obs_hadowplay_is_exe_excluded(const char *exe);
 
+EXTERNC bool obs_hadowplay_run_post_save_script(const std::string &filepath);
+
 EXTERNC bool obs_hadowplay_show_notification(std::string &title,
 					     std::string &message);
 

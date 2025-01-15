@@ -145,6 +145,10 @@ void obs_hadowplay_move_output_file(const std::string &original_filepath,
 
 	static std::string title = "Replay Saved";
 
+	if (Config::Inst().m_post_save_script) {
+		obs_hadowplay_run_post_save_script(new_filepath);
+	}
+
 	if (Config::Inst().m_play_notif_sound == true) {
 		obs_hadowplay_play_notif_sound();
 	}

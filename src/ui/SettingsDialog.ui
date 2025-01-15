@@ -1,205 +1,245 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>SettingsDialog</class>
- <widget class="QDialog" name="SettingsDialog">
-  <property name="geometry">
-   <rect>
-    <x>0</x>
-    <y>0</y>
-    <width>397</width>
-    <height>380</height>
-   </rect>
-  </property>
-  <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
-    <horstretch>0</horstretch>
-    <verstretch>0</verstretch>
-   </sizepolicy>
-  </property>
-  <property name="windowTitle">
-   <string>OBSHadowplay.Settings</string>
-  </property>
-  <property name="modal">
-   <bool>true</bool>
-  </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
-   <item>
-    <layout class="QVBoxLayout" name="verticalLayout_2">
-     <item>
-      <widget class="QLabel" name="exxceptions_label">
-       <property name="font">
-        <font>
-         <bold>true</bold>
-        </font>
-       </property>
-       <property name="text">
-        <string>OBSHadowplay.Settings.Exclusions</string>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <item>
-        <widget class="QListWidget" name="exceptions_list">
-         <property name="frameShadow">
-          <enum>QFrame::Raised</enum>
-         </property>
-         <property name="showDropIndicator" stdset="0">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <layout class="QVBoxLayout" name="verticalLayout_4">
-         <item>
-          <widget class="QPushButton" name="add_exception_button">
-           <property name="toolTip">
-            <string>OBSHadowplay.Settings.AddExclusion</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="themeID" stdset="0">
-            <string>addIconSmall</string>
-           </property>
-           <property name="toolButton" stdset="0">
+    <class>SettingsDialog</class>
+    <widget class="QDialog" name="SettingsDialog">
+        <property name="geometry">
+            <rect>
+                <x>0</x>
+                <y>0</y>
+                <width>397</width>
+                <height>380</height>
+            </rect>
+        </property>
+        <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+            </sizepolicy>
+        </property>
+        <property name="windowTitle">
+            <string>OBSHadowplay.Settings</string>
+        </property>
+        <property name="modal">
             <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="edit_exception_button">
-           <property name="toolTip">
-            <string>OBSHadowplay.Settings.EditExclusion</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="themeID" stdset="0">
-            <string>cogsIcon</string>
-           </property>
-           <property name="toolButton" stdset="0">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <widget class="QPushButton" name="delete_exception_button">
-           <property name="toolTip">
-            <string>OBSHadowplay.Settings.DeleteExclusion</string>
-           </property>
-           <property name="text">
-            <string/>
-           </property>
-           <property name="themeID" stdset="0">
-            <string>removeIconSmall</string>
-           </property>
-           <property name="toolButton" stdset="0">
-            <bool>true</bool>
-           </property>
-          </widget>
-         </item>
-         <item>
-          <spacer name="verticalSpacer">
-           <property name="orientation">
-            <enum>Qt::Vertical</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>20</width>
-             <height>40</height>
-            </size>
-           </property>
-          </spacer>
-         </item>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+                <layout class="QVBoxLayout" name="verticalLayout_2">
+                    <item>
+                        <widget class="QLabel" name="exxceptions_label">
+                            <property name="font">
+                                <font>
+                                    <bold>true</bold>
+                                </font>
+                            </property>
+                            <property name="text">
+                                <string>OBSHadowplay.Settings.Exclusions</string>
+                            </property>
+                        </widget>
+                    </item>
+                    <item>
+                        <layout class="QHBoxLayout" name="horizontalLayout">
+                            <item>
+                                <widget class="QListWidget" name="exceptions_list">
+                                    <property name="frameShadow">
+                                        <enum>QFrame::Raised</enum>
+                                    </property>
+                                    <property name="showDropIndicator" stdset="0">
+                                        <bool>false</bool>
+                                    </property>
+                                </widget>
+                            </item>
+                            <item>
+                                <layout class="QVBoxLayout" name="verticalLayout_4">
+                                    <item>
+                                        <widget class="QPushButton" name="add_exception_button">
+                                            <property name="toolTip">
+                                                <string>OBSHadowplay.Settings.AddExclusion</string>
+                                            </property>
+                                            <property name="text">
+                                                <string />
+                                            </property>
+                                            <property name="themeID" stdset="0">
+                                                <string>addIconSmall</string>
+                                            </property>
+                                            <property name="toolButton" stdset="0">
+                                                <bool>true</bool>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <widget class="QPushButton" name="edit_exception_button">
+                                            <property name="toolTip">
+                                                <string>OBSHadowplay.Settings.EditExclusion</string>
+                                            </property>
+                                            <property name="text">
+                                                <string />
+                                            </property>
+                                            <property name="themeID" stdset="0">
+                                                <string>cogsIcon</string>
+                                            </property>
+                                            <property name="toolButton" stdset="0">
+                                                <bool>true</bool>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <widget class="QPushButton" name="delete_exception_button">
+                                            <property name="toolTip">
+                                                <string>OBSHadowplay.Settings.DeleteExclusion</string>
+                                            </property>
+                                            <property name="text">
+                                                <string />
+                                            </property>
+                                            <property name="themeID" stdset="0">
+                                                <string>removeIconSmall</string>
+                                            </property>
+                                            <property name="toolButton" stdset="0">
+                                                <bool>true</bool>
+                                            </property>
+                                        </widget>
+                                    </item>
+                                    <item>
+                                        <spacer name="verticalSpacer">
+                                            <property name="orientation">
+                                                <enum>Qt::Vertical</enum>
+                                            </property>
+                                            <property name="sizeHint" stdset="0">
+                                                <size>
+                                                    <width>20</width>
+                                                    <height>40</height>
+                                                </size>
+                                            </property>
+                                        </spacer>
+                                    </item>
+                                </layout>
+                            </item>
+                        </layout>
+                    </item>
+                </layout>
+            </item>
+            <item>
+                <widget class="QCheckBox" name="automatic_replay_checkbox">
+                    <property name="text">
+                        <string>OBSHadowplay.Settings.AutomaticReplayBufferEnabled</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QCheckBox" name="include_screenshots_checkbox">
+                    <property name="text">
+                        <string>OBSHadowplay.Settings.IncludeScreenshots</string>
+                    </property>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="group_box_global">
+                    <property name="title">
+                        <string>OBSHadowplay.Settings.Notifications</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_3">
+                        <item>
+                            <widget class="QCheckBox" name="play_notification_sound_checkbox">
+                                <property name="text">
+                                    <string>OBSHadowplay.Settings.Notifications.PlayNotificationSound</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <widget class="QCheckBox" name="show_desktop_notif_checkbox">
+                                <property name="text">
+                                    <string>OBSHadowplay.Settings.Notifications.ShowDesktopNotification</string>
+                                </property>
+                            </widget>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QGroupBox" name="group_box_post_save">
+                    <property name="title">
+                        <string>OBSHadowplay.Settings.PostSaveScript</string>
+                    </property>
+                    <layout class="QVBoxLayout" name="verticalLayout_post_save">
+                        <item>
+                            <widget class="QCheckBox" name="enable_post_save_script_checkbox">
+                                <property name="text">
+                                    <string>OBSHadowplay.Settings.PostSaveScript.Enabled</string>
+                                </property>
+                            </widget>
+                        </item>
+                        <item>
+                            <layout class="QHBoxLayout" name="horizontalLayout_2">
+                                <item>
+                                    <widget class="QLineEdit" name="post_save_script_path">
+                                        <property name="readOnly">
+                                            <bool>true</bool>
+                                        </property>
+                                        <property name="placeholderText">
+                                            <string>OBSHadowplay.Settings.PostSaveScript.SelectScript</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                                <item>
+                                    <widget class="QPushButton" name="browse_script_button">
+                                        <property name="toolTip">
+                                            <string>OBSHadowplay.Settings.PostSaveScript.Browse</string>
+                                        </property>
+                                        <property name="text">
+                                            <string>Browse</string>
+                                        </property>
+                                    </widget>
+                                </item>
+                            </layout>
+                        </item>
+                    </layout>
+                </widget>
+            </item>
+            <item>
+                <widget class="QDialogButtonBox" name="button_box">
+                    <property name="orientation">
+                        <enum>Qt::Horizontal</enum>
+                    </property>
+                    <property name="standardButtons">
+                        <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+                    </property>
+                </widget>
+            </item>
         </layout>
-       </item>
-      </layout>
-     </item>
-    </layout>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="automatic_replay_checkbox">
-     <property name="text">
-      <string>OBSHadowplay.Settings.AutomaticReplayBufferEnabled</string>
-     </property>
     </widget>
-   </item>
-   <item>
-    <widget class="QCheckBox" name="include_screenshots_checkbox">
-     <property name="text">
-      <string>OBSHadowplay.Settings.IncludeScreenshots</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <widget class="QGroupBox" name="group_box_global">
-     <property name="title">
-      <string>OBSHadowplay.Settings.Notifications</string>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_3">
-      <item>
-       <widget class="QCheckBox" name="play_notification_sound_checkbox">
-        <property name="text">
-         <string>OBSHadowplay.Settings.Notifications.PlayNotificationSound</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QCheckBox" name="show_desktop_notif_checkbox">
-        <property name="text">
-         <string>OBSHadowplay.Settings.Notifications.ShowDesktopNotification</string>
-        </property>
-       </widget>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QDialogButtonBox" name="button_box">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
-     </property>
-     <property name="standardButtons">
-      <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
-     </property>
-    </widget>
-   </item>
-  </layout>
- </widget>
- <resources/>
- <connections>
-  <connection>
-   <sender>button_box</sender>
-   <signal>accepted()</signal>
-   <receiver>SettingsDialog</receiver>
-   <slot>accept()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>248</x>
-     <y>254</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>157</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
-  <connection>
-   <sender>button_box</sender>
-   <signal>rejected()</signal>
-   <receiver>SettingsDialog</receiver>
-   <slot>reject()</slot>
-   <hints>
-    <hint type="sourcelabel">
-     <x>316</x>
-     <y>260</y>
-    </hint>
-    <hint type="destinationlabel">
-     <x>286</x>
-     <y>274</y>
-    </hint>
-   </hints>
-  </connection>
- </connections>
+    <resources />
+    <connections>
+        <connection>
+            <sender>button_box</sender>
+            <signal>accepted()</signal>
+            <receiver>SettingsDialog</receiver>
+            <slot>accept()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>248</x>
+                    <y>254</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>157</x>
+                    <y>274</y>
+                </hint>
+            </hints>
+        </connection>
+        <connection>
+            <sender>button_box</sender>
+            <signal>rejected()</signal>
+            <receiver>SettingsDialog</receiver>
+            <slot>reject()</slot>
+            <hints>
+                <hint type="sourcelabel">
+                    <x>316</x>
+                    <y>260</y>
+                </hint>
+                <hint type="destinationlabel">
+                    <x>286</x>
+                    <y>274</y>
+                </hint>
+            </hints>
+        </connection>
+    </connections>
 </ui>
