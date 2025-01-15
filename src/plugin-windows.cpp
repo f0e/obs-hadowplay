@@ -288,6 +288,11 @@ bool obs_hadowplay_get_product_name_from_source(obs_source_t *source,
 	if (source == nullptr)
 		return false;
 
+	if (strcmpi(obs_source_get_id(source), "monitor_capture") == 0) {
+		product_name = "Desktop";
+		return true;
+	}
+
 	calldata_t hooked_calldata;
 	calldata_init(&hooked_calldata);
 
