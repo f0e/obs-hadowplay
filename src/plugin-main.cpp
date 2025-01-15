@@ -36,13 +36,21 @@ OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
 bool obs_hadowplay_is_capture_source(obs_source_t *source)
 {
-	return (source != nullptr &&
-		(strcmpi(obs_source_get_id(source), "game_capture") == 0 ||
-		 strcmpi(obs_source_get_id(source), "window_capture") == 0));
+	if (source == nullptr || !obs_source_active(source))
+		return false;
+
+	const char *source_id = obs_source_get_id(source);
+	return strcmpi(source_id, "monitor_capture") == 0 ||
+	       strcmpi(source_id, "game_capture") == 0 ||
+	       strcmpi(source_id, "window_capture") == 0;
 }
 
 bool obs_hadowplay_is_capture_source_hooked(obs_source_t *source)
 {
+	if (strcmpi(obs_source_get_id(source), "monitor_capture") == 0)
+		// monitor capture doesn't hook
+		return true;
+
 	calldata_t hooked_calldata;
 	calldata_init(&hooked_calldata);
 
