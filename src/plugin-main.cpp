@@ -90,15 +90,45 @@ void obs_hadowplay_enum_source_for_hooked_capture(obs_source_t *parent,
 	}
 }
 
-bool obs_hadowplay_get_captured_name(std::string &target_name)
+void collect_sources_callback(obs_source_t *parent, obs_source_t *source,
+			      void *param)
+{
+	UNUSED_PARAMETER(parent);
+
+	auto sources = reinterpret_cast<std::vector<obs_source_t *> *>(param);
+
+	if (obs_hadowplay_is_capture_source(source) &&
+	    obs_hadowplay_is_capture_source_hooked(source)) {
+		sources->emplace_back(obs_source_get_ref(source));
+	}
+}
+
+obs_source_t *get_active_source()
 {
 	obs_source_t *scene_source = obs_frontend_get_current_scene();
 
-	obs_source_t *active_capture_source = nullptr;
+	std::vector<obs_source_t *> sources;
 
-	obs_source_enum_active_tree(
-		scene_source, &obs_hadowplay_enum_source_for_hooked_capture,
-		&active_capture_source);
+	obs_source_enum_active_tree(scene_source, collect_sources_callback,
+				    &sources);
+
+	obs_source_t *topmost_source = nullptr;
+
+	for (auto it = sources.rbegin(); it != sources.rend(); ++it) {
+		if (!topmost_source)
+			topmost_source = *it;
+		else
+			obs_source_release(*it);
+	}
+
+	obs_source_release(scene_source);
+
+	return topmost_source;
+}
+
+bool obs_hadowplay_get_captured_name(std::string &target_name)
+{
+	obs_source_t *active_capture_source = get_active_source();
 
 	if (active_capture_source != nullptr) {
 		obs_log(LOG_INFO, "Active capture found: %s",
@@ -107,11 +137,8 @@ bool obs_hadowplay_get_captured_name(std::string &target_name)
 		obs_hadowplay_get_product_name_from_source(
 			active_capture_source, target_name);
 		obs_source_release(active_capture_source);
-		obs_source_release(scene_source);
 		return true;
 	}
-
-	obs_source_release(scene_source);
 
 	return false;
 }
@@ -362,18 +389,11 @@ extern void obs_hadowplay_replay_buffer_stop()
 
 bool obs_hadowplay_has_active_captures()
 {
-	obs_source_t *scene_source = obs_frontend_get_current_scene();
+	obs_source_t *active_capture_source = get_active_source();
 
-	obs_source_t *hooked_capture_source = nullptr;
+	bool has_active_capture = active_capture_source != nullptr;
 
-	obs_source_enum_active_tree(
-		scene_source, obs_hadowplay_enum_source_for_hooked_capture,
-		&hooked_capture_source);
-
-	bool has_active_capture = hooked_capture_source != nullptr;
-
-	obs_source_release(hooked_capture_source);
-	obs_source_release(scene_source);
+	obs_source_release(active_capture_source);
 
 	return has_active_capture;
 }
