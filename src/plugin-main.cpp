@@ -95,11 +95,15 @@ void collect_sources_callback(obs_source_t *parent, obs_source_t *source,
 {
 	UNUSED_PARAMETER(parent);
 
-	auto sources = reinterpret_cast<std::vector<obs_source_t *> *>(param);
+	obs_source_t **topmost_source =
+		reinterpret_cast<obs_source_t **>(param);
 
 	if (obs_hadowplay_is_capture_source(source) &&
 	    obs_hadowplay_is_capture_source_hooked(source)) {
-		sources->emplace_back(obs_source_get_ref(source));
+		if (*topmost_source != nullptr)
+			obs_source_release(*topmost_source);
+
+		*topmost_source = obs_source_get_ref(source);
 	}
 }
 
@@ -107,21 +111,10 @@ obs_source_t *get_active_source()
 {
 	obs_source_t *scene_source = obs_frontend_get_current_scene();
 
-	std::vector<obs_source_t *> sources;
-
-	obs_source_enum_active_tree(scene_source, collect_sources_callback,
-				    &sources);
-
 	obs_source_t *topmost_source = nullptr;
 
-	for (auto it = sources.rbegin(); it != sources.rend(); ++it) {
-		if (!topmost_source)
-			topmost_source = *it;
-		else
-			obs_source_release(*it);
-	}
-
-	obs_source_release(scene_source);
+	obs_source_enum_active_tree(scene_source, collect_sources_callback,
+				    &topmost_source);
 
 	return topmost_source;
 }
