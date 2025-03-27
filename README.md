@@ -7,6 +7,17 @@ In an attempt to move away from ShadowPlay and it's lack of customization, I tho
 This includes automatic replay buffer start/stop based on hooked captures within the active scene and the organisation of replays/recordings into folders named after the capture subject.
 
 ## Changelog
+* v2.2.1
+  * Added a configurable replay buffer stop delay
+  * Added an option to restart the replay buffer on save
+
+
+* v2.1.0 (2.0.4)
+  * Added an option to organise screenshots
+  * Added an option add discovered target name as a filename prefix
+  * Added an option to disable automatic file organisation all together
+
+
 * v2.0.3
   * Now works with all types of window-capture and game-capture
   * Improved capture subject name retrieval
@@ -18,9 +29,10 @@ This includes automatic replay buffer start/stop based on hooked captures within
     * Settings are saved at the scene collection level
   * No longer starts recording if all running fullscreen windows are excluded
     * User exclusions can be added through the settings menu
-  * Added notifications when recordings are organised into folders
+  * Added notifications when recordings are saved
     * Both sound and dekstop notifications can be toggled through the settings menu
   * Automatic replay now checks inside groups and scene references for game-captures
+
 
 * v1.1.3
   * Added automatic replay organisation
@@ -40,3 +52,7 @@ Language packs
 * English
 * Russian
 * French
+* Chinese
+* Taiwanese
+
+[![ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/A0A81C1OCB)

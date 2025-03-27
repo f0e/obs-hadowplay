@@ -18,8 +18,20 @@ void Config::Save(obs_data_t *save_data)
 	obs_data_set_bool(hadowplay_data, CONFIG_AUTOREPLAY_ENABLED,
 			  this->m_auto_replay_buffer);
 
+	obs_data_set_int(hadowplay_data, CONFIG_AUTOREPLY_BUFFER_STOP_DELAY,
+			 this->m_auto_replay_buffer_stop_delay);
+
+	obs_data_set_bool(hadowplay_data, CONFIG_AUTOREPLY_RESET_ON_SAVE,
+			  this->m_restart_replay_buffer_on_save);
+
+	obs_data_set_bool(hadowplay_data, CONFIG_ENABLE_AUTO_ORGANISATION,
+			  this->m_enable_auto_organisation);
+
 	obs_data_set_bool(hadowplay_data, CONFIG_INCLUDE_SCREENSHOTS,
 			  this->m_include_screenshots);
+
+	obs_data_set_bool(hadowplay_data, CONFIG_FOLDER_NAME_AS_PREFIX,
+			  this->m_folder_name_as_prefix);
 
 	obs_data_set_bool(hadowplay_data, CONFIG_PLAY_NOTIF_SOUND,
 			  this->m_play_notif_sound);
@@ -61,8 +73,20 @@ void Config::Load(obs_data_t *load_data)
 	this->m_auto_replay_buffer =
 		obs_data_get_bool(hadowplay_data, CONFIG_AUTOREPLAY_ENABLED);
 
+	this->m_auto_replay_buffer_stop_delay = (int)obs_data_get_int(
+		hadowplay_data, CONFIG_AUTOREPLY_BUFFER_STOP_DELAY);
+
+	this->m_restart_replay_buffer_on_save = obs_data_get_bool(
+		hadowplay_data, CONFIG_AUTOREPLY_RESET_ON_SAVE);
+
+	this->m_enable_auto_organisation = obs_data_get_bool(
+		hadowplay_data, CONFIG_ENABLE_AUTO_ORGANISATION);
+
 	this->m_include_screenshots =
 		obs_data_get_bool(hadowplay_data, CONFIG_INCLUDE_SCREENSHOTS);
+
+	this->m_folder_name_as_prefix =
+		obs_data_get_bool(hadowplay_data, CONFIG_FOLDER_NAME_AS_PREFIX);
 
 	this->m_play_notif_sound =
 		obs_data_get_bool(hadowplay_data, CONFIG_PLAY_NOTIF_SOUND);
@@ -97,8 +121,20 @@ void Config::SetDefaults(obs_data_t *hadowplay_data)
 	obs_data_set_default_bool(hadowplay_data, CONFIG_AUTOREPLAY_ENABLED,
 				  true);
 
+	obs_data_set_default_int(hadowplay_data,
+				 CONFIG_AUTOREPLY_BUFFER_STOP_DELAY, 0);
+
+	obs_data_set_default_bool(hadowplay_data,
+				  CONFIG_AUTOREPLY_RESET_ON_SAVE, false);
+
+	obs_data_set_default_bool(hadowplay_data,
+				  CONFIG_ENABLE_AUTO_ORGANISATION, true);
+
 	obs_data_set_default_bool(hadowplay_data, CONFIG_INCLUDE_SCREENSHOTS,
 				  true);
+
+	obs_data_set_default_bool(hadowplay_data, CONFIG_FOLDER_NAME_AS_PREFIX,
+				  false);
 
 	obs_data_set_default_bool(hadowplay_data, CONFIG_PLAY_NOTIF_SOUND,
 				  true);

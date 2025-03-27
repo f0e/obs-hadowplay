@@ -16,6 +16,11 @@ SettingsDialog::SettingsDialog() : QDialog(nullptr), ui(new Ui::SettingsDialog)
 	// Remove the ? button on dialogs on Windows
 	setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
 
+	// Set the warning icon
+	QSize pixmapSize = QSize(16, 16);
+	QIcon icon = style()->standardIcon(QStyle::SP_MessageBoxWarning);
+	ui->reset_on_save_info_icon->setPixmap(icon.pixmap(pixmapSize));
+
 	connect(ui->button_box, &QDialogButtonBox::accepted, this,
 		&SettingsDialog::button_box_accepted);
 
@@ -56,8 +61,20 @@ void SettingsDialog::showEvent(QShowEvent *event)
 	ui->automatic_replay_checkbox->setChecked(
 		Config::Inst().m_auto_replay_buffer);
 
+	ui->buffer_stop_delay_spinbox->setValue(
+		Config::Inst().m_auto_replay_buffer_stop_delay);
+
+	ui->reset_buffer_on_save_checkbox->setChecked(
+		Config::Inst().m_restart_replay_buffer_on_save);
+
+	ui->enable_automatic_organisation_checkbox->setChecked(
+		Config::Inst().m_enable_auto_organisation);
+
 	ui->include_screenshots_checkbox->setChecked(
 		Config::Inst().m_include_screenshots);
+
+	ui->folder_name_as_prefix_checkbox->setChecked(
+		Config::Inst().m_folder_name_as_prefix);
 
 	ui->play_notification_sound_checkbox->setChecked(
 		Config::Inst().m_play_notif_sound);
@@ -88,8 +105,20 @@ void SettingsDialog::ApplyConfig()
 	Config::Inst().m_auto_replay_buffer =
 		this->ui->automatic_replay_checkbox->isChecked();
 
+	Config::Inst().m_auto_replay_buffer_stop_delay =
+		this->ui->buffer_stop_delay_spinbox->value();
+
+	Config::Inst().m_restart_replay_buffer_on_save =
+		this->ui->reset_buffer_on_save_checkbox->isChecked();
+
+	Config::Inst().m_enable_auto_organisation =
+		this->ui->enable_automatic_organisation_checkbox->isChecked();
+
 	Config::Inst().m_include_screenshots =
 		this->ui->include_screenshots_checkbox->isChecked();
+
+	Config::Inst().m_folder_name_as_prefix =
+		this->ui->folder_name_as_prefix_checkbox->isChecked();
 
 	Config::Inst().m_play_notif_sound =
 		this->ui->play_notification_sound_checkbox->isChecked();

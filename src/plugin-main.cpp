@@ -140,8 +140,8 @@ bool obs_hadowplay_is_replay_controlled = false;
 bool obs_hadowplay_manual_start = false;
 bool obs_hadowplay_manual_stop = false;
 
-void obs_hadowplay_move_output_file(const std::string &original_filepath,
-				    const std::string &target_name)
+std::string obs_hadowplay_move_output_file(const std::string &original_filepath,
+					   const std::string &target_name)
 {
 	const size_t filename_pos = original_filepath.find_last_of("/\\") + 1;
 
@@ -157,25 +157,40 @@ void obs_hadowplay_move_output_file(const std::string &original_filepath,
 		os_mkdir(target_directory.c_str());
 	}
 
+	if (Config::Inst().m_folder_name_as_prefix == true) {
+		replay_filename =
+			obs_hadowplay_cleanup_path_string(target_name) + "_" +
+			replay_filename;
+	}
+
 	std::string new_filepath = target_directory + "/" + replay_filename;
 
-	obs_log(LOG_INFO, "Renaming files: %s -> %s", original_filepath.c_str(),
+	obs_log(LOG_INFO, "Renaming file: %s -> %s", original_filepath.c_str(),
 		new_filepath.c_str());
 	os_rename(original_filepath.c_str(), new_filepath.c_str());
-
-	static std::string title = "Replay Saved";
 
 	if (Config::Inst().m_post_save_script) {
 		obs_hadowplay_run_post_save_script(new_filepath);
 	}
 
+	return new_filepath;
+}
+
+void obs_hadowplay_notify_saved(const std::string &title,
+				const std::string &filepath)
+{
 	if (Config::Inst().m_play_notif_sound == true) {
 		obs_hadowplay_play_notif_sound();
 	}
 	if (Config::Inst().m_show_desktop_notif == true) {
-		obs_hadowplay_show_notification(title, new_filepath);
+		obs_hadowplay_show_notification(title, filepath);
 	}
 }
+
+using obs_hadowplay_time_point =
+	std::chrono::time_point<std::chrono::steady_clock>;
+
+obs_hadowplay_time_point requested_stop;
 
 bool obs_hadowplay_start_automatic_replay_buffer()
 {
@@ -190,6 +205,9 @@ bool obs_hadowplay_start_automatic_replay_buffer()
 
 	obs_output_release(replay_output);
 
+	// Reset stop time point
+	requested_stop = obs_hadowplay_time_point();
+
 	// False if already running
 	if (obs_frontend_replay_buffer_active() == true)
 		return false;
@@ -199,15 +217,31 @@ bool obs_hadowplay_start_automatic_replay_buffer()
 		return false;
 
 	obs_log(LOG_INFO, "Automatic replay started");
-
 	os_atomic_store_bool(&obs_hadowplay_is_replay_controlled, true);
 	obs_frontend_replay_buffer_start();
 
 	return true;
 }
 
-bool obs_hadowplay_stop_automatic_replay_buffer()
+bool obs_hadowplay_stop_automatic_replay_buffer(bool force = false)
 {
+	if (Config::Inst().m_auto_replay_buffer_stop_delay != 0 &&
+	    force == false) {
+		obs_hadowplay_time_point current_time =
+			std::chrono::steady_clock::now();
+
+		if (requested_stop.time_since_epoch().count() == 0) {
+			// Start point for delay timer
+			requested_stop = current_time;
+			return false;
+		} else if (std::chrono::duration_cast<std::chrono::seconds>(
+				   current_time - requested_stop)
+				   .count() <
+			   Config::Inst().m_auto_replay_buffer_stop_delay) {
+			return false;
+		}
+	}
+
 	// Clear manual stop if automatic stop is called
 	os_atomic_store_bool(&obs_hadowplay_manual_stop, false);
 
@@ -216,7 +250,8 @@ bool obs_hadowplay_stop_automatic_replay_buffer()
 		return false;
 
 	// False if manually started
-	if (os_atomic_load_bool(&obs_hadowplay_manual_start) == true)
+	if (os_atomic_load_bool(&obs_hadowplay_manual_start) == true &&
+	    force == false)
 		return false;
 
 	obs_log(LOG_INFO, "Automatic replay stopped");
@@ -225,6 +260,49 @@ bool obs_hadowplay_stop_automatic_replay_buffer()
 	obs_frontend_replay_buffer_stop();
 
 	return true;
+}
+
+void obs_hadowplay_default_replay_buffer_event_callback(
+	enum obs_frontend_event event, void *private_data);
+
+void obs_hadowplay_replay_buffer_deactivated(void *data, calldata_t *calldata)
+{
+	obs_frontend_add_event_callback(
+		obs_hadowplay_default_replay_buffer_event_callback, NULL);
+
+	obs_output_t *output = (obs_output_t *)calldata_ptr(calldata, "output");
+
+	signal_handler_t *signal_handler =
+		obs_output_get_signal_handler(output);
+
+	signal_handler_disconnect(signal_handler, "deactivate",
+				  &obs_hadowplay_replay_buffer_deactivated,
+				  nullptr);
+
+	obs_log(LOG_INFO, "Replay buffer successfully restarted");
+
+	obs_frontend_replay_buffer_start();
+}
+
+void obs_hadowplay_restart_replay_buffer()
+{
+	obs_log(LOG_INFO, "Restarting replay buffer");
+
+	obs_frontend_remove_event_callback(
+		obs_hadowplay_default_replay_buffer_event_callback, NULL);
+
+	obs_output_t *replay_buffer = obs_frontend_get_replay_buffer_output();
+
+	signal_handler_t *signal_handler =
+		obs_output_get_signal_handler(replay_buffer);
+
+	signal_handler_connect(signal_handler, "deactivate",
+			       &obs_hadowplay_replay_buffer_deactivated,
+			       nullptr);
+
+	obs_output_force_stop(replay_buffer);
+
+	obs_output_release(replay_buffer);
 }
 
 extern void obs_hadowplay_replay_buffer_stop()
@@ -417,20 +495,15 @@ void obs_hadowplay_initialise()
 			       &obs_hadowplay_source_deactivated, nullptr);
 }
 
-std::string recording_target_name;
-
-void obs_hadowplay_frontend_event_callback(enum obs_frontend_event event,
-					   void *private_data)
+void obs_hadowplay_default_replay_buffer_event_callback(
+	enum obs_frontend_event event, void *private_data)
 {
 	UNUSED_PARAMETER(private_data);
 
 	switch (event) {
-	case OBS_FRONTEND_EVENT_FINISHED_LOADING: {
-		obs_hadowplay_initialise_update_thread();
-		break;
-	}
 
 #pragma region Replay events
+
 	case OBS_FRONTEND_EVENT_REPLAY_BUFFER_STOPPED: {
 		if (os_atomic_load_bool(&obs_hadowplay_is_replay_controlled) ==
 		    true) {
@@ -460,34 +533,68 @@ void obs_hadowplay_frontend_event_callback(enum obs_frontend_event event,
 		}
 
 		std::string target_name;
-		if (obs_hadowplay_get_captured_name(target_name) == true) {
+		if (Config::Inst().m_enable_auto_organisation == true &&
+		    obs_hadowplay_get_captured_name(target_name) == true) {
 
-			obs_hadowplay_move_output_file(replay_path_c,
-						       target_name);
+			std::string new_filepath =
+				obs_hadowplay_move_output_file(replay_path_c,
+							       target_name);
+
+			replay_path_c = new_filepath.c_str();
+		}
+
+		obs_hadowplay_notify_saved("Replay Saved", replay_path_c);
+
+		if (Config::Inst().m_restart_replay_buffer_on_save == true) {
+			obs_hadowplay_restart_replay_buffer();
 		}
 		break;
 	}
+
 #pragma endregion
+	}
+}
+
+std::string recording_target_name;
+
+void obs_hadowplay_frontend_event_callback(enum obs_frontend_event event,
+					   void *private_data)
+{
+	UNUSED_PARAMETER(private_data);
+
+	switch (event) {
+	case OBS_FRONTEND_EVENT_FINISHED_LOADING: {
+		obs_hadowplay_initialise_update_thread();
+		break;
+	}
 
 #pragma region Screenshot event
 
 	case OBS_FRONTEND_EVENT_SCREENSHOT_TAKEN: {
-		if (Config::Inst().m_include_screenshots == true) {
-			const char *replay_path_c =
-				obs_frontend_get_last_screenshot();
+		const char *screenshot_path_c =
+			obs_frontend_get_last_screenshot();
 
-			if (replay_path_c == NULL) {
-				return;
-			}
+		if (screenshot_path_c == NULL) {
+			return;
+		}
+
+		if (Config::Inst().m_enable_auto_organisation == true &&
+		    Config::Inst().m_include_screenshots == true) {
 
 			std::string target_name;
 			if (obs_hadowplay_get_captured_name(target_name) ==
 			    true) {
 
-				obs_hadowplay_move_output_file(replay_path_c,
-							       target_name);
+				std::string new_filepath =
+					obs_hadowplay_move_output_file(
+						screenshot_path_c, target_name);
+
+				screenshot_path_c = new_filepath.c_str();
 			}
 		}
+
+		obs_hadowplay_notify_saved("Screenshot Saved",
+					   screenshot_path_c);
 		break;
 	}
 
@@ -508,22 +615,6 @@ void obs_hadowplay_frontend_event_callback(enum obs_frontend_event event,
 	}
 
 	case OBS_FRONTEND_EVENT_RECORDING_STOPPED: {
-
-		if (recording_target_name.empty() == true) {
-			std::string target_name;
-
-			if (obs_hadowplay_get_captured_name(target_name) ==
-			    true) {
-				recording_target_name = target_name;
-				obs_log(LOG_INFO, "Recording target found: %s",
-					recording_target_name.c_str());
-			}
-		}
-
-		if (recording_target_name.empty() == true) {
-			return;
-		}
-
 		const char *recording_path_c =
 			obs_frontend_get_last_recording();
 
@@ -531,8 +622,33 @@ void obs_hadowplay_frontend_event_callback(enum obs_frontend_event event,
 			return;
 		}
 
-		obs_hadowplay_move_output_file(recording_path_c,
-					       recording_target_name);
+		if (Config::Inst().m_enable_auto_organisation == true) {
+
+			if (recording_target_name.empty() == true) {
+				std::string target_name;
+
+				if (obs_hadowplay_get_captured_name(
+					    target_name) == true) {
+					recording_target_name = target_name;
+					obs_log(LOG_INFO,
+						"Recording target found: %s",
+						recording_target_name.c_str());
+				}
+			}
+
+			if (recording_target_name.empty() == false) {
+
+				std::string new_filepath =
+					obs_hadowplay_move_output_file(
+						recording_path_c,
+						recording_target_name);
+
+				recording_path_c = new_filepath.c_str();
+			}
+		}
+
+		obs_hadowplay_notify_saved("Recording Saved", recording_path_c);
+
 		break;
 	}
 #pragma endregion
@@ -578,6 +694,9 @@ bool obs_module_load(void)
 
 	obs_frontend_add_event_callback(obs_hadowplay_frontend_event_callback,
 					NULL);
+
+	obs_frontend_add_event_callback(
+		obs_hadowplay_default_replay_buffer_event_callback, NULL);
 
 	obs_frontend_push_ui_translation(obs_module_get_string);
 
