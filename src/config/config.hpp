@@ -11,6 +11,7 @@
 #define CONFIG_CUSTOM_FILENAME_ARRANGEMENT "CustomFilenameArrangment"
 #define CONFIG_CUSTOM_FILENAME_SEPERATOR "CustomFilenameSeperator"
 #define CONFIG_INCLUDE_SCREENSHOTS "IncludeScreenshots"
+#define CONFIG_MOVE_FRAME_TIMING "MoveFrameTiming"
 #define CONFIG_EXCLUSION_ITEM_STRING "AppName"
 #define CONFIG_EXCLUSIONS "Exclusions"
 #define CONFIG_POST_SAVE_SCRIPT "PostSaveScript"
@@ -53,6 +54,7 @@ public:
 	bool m_enable_auto_organisation = true;
 	bool m_enable_folder_organisation = true;
 	bool m_include_screenshots = true;
+	bool m_move_frame_timing = true;
 
 	// Custom filename setting
 	bool m_use_custom_filename_format = true;

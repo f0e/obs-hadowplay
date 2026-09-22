@@ -29,6 +29,13 @@ with this program. If not, see <https://www.gnu.org/licenses/>
 #include "ui/SettingsDialog.hpp"
 #include "config/config.hpp"
 
+#include <algorithm>
+#include <atomic>
+#include <chrono>
+#include <future>
+#include <mutex>
+#include <vector>
+
 OBS_DECLARE_MODULE()
 OBS_MODULE_USE_DEFAULT_LOCALE(PLUGIN_NAME, "en-US")
 
@@ -197,6 +204,62 @@ std::string obs_hadowplay_move_output_file(const std::string &original_filepath,
 
 	return new_filepath;
 }
+
+#pragma region Frame timing logs
+
+const std::string frame_timing_suffix = ".frametiming";
+constexpr auto frame_timing_move_timeout = std::chrono::seconds(10);
+
+std::atomic_bool frame_timing_movers_stopping = false;
+std::mutex frame_timing_movers_mutex;
+std::vector<std::future<void>> frame_timing_movers;
+
+void obs_hadowplay_move_frame_timing(const std::string &original_filepath, const std::string &new_filepath)
+{
+	if (original_filepath == new_filepath || os_file_exists(new_filepath.c_str()) == false)
+		return;
+
+	std::string from = original_filepath + frame_timing_suffix;
+	std::string to = new_filepath + frame_timing_suffix;
+
+	std::lock_guard<std::mutex> lock(frame_timing_movers_mutex);
+
+	frame_timing_movers.erase(std::remove_if(frame_timing_movers.begin(), frame_timing_movers.end(),
+						 [](const std::future<void> &mover) {
+							 return mover.wait_for(std::chrono::seconds(0)) ==
+								std::future_status::ready;
+						 }),
+				  frame_timing_movers.end());
+
+	frame_timing_movers.push_back(std::async(std::launch::async, [from, to]() {
+		auto deadline = std::chrono::steady_clock::now() + frame_timing_move_timeout;
+
+		while (frame_timing_movers_stopping == false) {
+			if (os_rename(from.c_str(), to.c_str()) == 0) {
+				obs_log(LOG_INFO, "Moved frame timing log: %s -> %s", from.c_str(), to.c_str());
+				return;
+			}
+
+			if (std::chrono::steady_clock::now() > deadline)
+				break;
+
+			os_sleep_ms(100);
+		}
+
+		if (os_file_exists(from.c_str()))
+			obs_log(LOG_WARNING, "Failed to move frame timing log: %s", from.c_str());
+	}));
+}
+
+void obs_hadowplay_close_frame_timing_movers()
+{
+	frame_timing_movers_stopping = true;
+
+	std::lock_guard<std::mutex> lock(frame_timing_movers_mutex);
+	frame_timing_movers.clear();
+}
+
+#pragma endregion
 
 void obs_hadowplay_notify_saved(const std::string &title, const std::string &filepath)
 {
@@ -523,6 +586,9 @@ void obs_hadowplay_default_replay_buffer_event_callback(enum obs_frontend_event 
 
 			std::string new_filepath = obs_hadowplay_move_output_file(replay_path_c, target_name);
 
+			if (Config::Inst().m_move_frame_timing == true)
+				obs_hadowplay_move_frame_timing(replay_path_c, new_filepath);
+
 			replay_path_c = new_filepath.c_str();
 		}
 
@@ -613,6 +679,9 @@ void obs_hadowplay_frontend_event_callback(enum obs_frontend_event event, void *
 				std::string new_filepath =
 					obs_hadowplay_move_output_file(recording_path_c, recording_target_name);
 
+				if (Config::Inst().m_move_frame_timing == true)
+					obs_hadowplay_move_frame_timing(recording_path_c, new_filepath);
+
 				recording_path_c = new_filepath.c_str();
 			}
 		}
@@ -685,6 +754,8 @@ void obs_module_unload()
 {
 	// Make sure the update thread has closed
 	obs_hadowplay_close_update_thread();
+
+	obs_hadowplay_close_frame_timing_movers();
 
 	obs_log(LOG_INFO, "plugin unloaded");
 }

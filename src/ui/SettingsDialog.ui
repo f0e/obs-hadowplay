@@ -206,7 +206,24 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0" colspan="2">
+      <item row="2" column="0">
+       <widget class="QCheckBox" name="move_frame_timing_checkbox">
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item row="2" column="1">
+       <widget class="QLabel" name="label_frame_timing">
+        <property name="toolTip">
+         <string>OBSHadowplay.Settings.Organisation.MoveFrameTiming.Tooltip</string>
+        </property>
+        <property name="text">
+         <string>OBSHadowplay.Settings.Organisation.MoveFrameTiming</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0" colspan="2">
        <widget class="QGroupBox" name="custom_filename_groupbox">
         <property name="toolTip">
          <string>OBSHadowplay.Settings.Organisation.CustomFilename.EnableCustomFilename</string>
