@@ -27,6 +27,8 @@ void Config::Save(obs_data_t *save_data)
 
 	obs_data_set_bool(hadowplay_data, CONFIG_INCLUDE_SCREENSHOTS, this->m_include_screenshots);
 
+	obs_data_set_bool(hadowplay_data, CONFIG_MOVE_FRAME_TIMING, this->m_move_frame_timing);
+
 	obs_data_set_bool(hadowplay_data, CONFIG_USE_CUSTOM_FILENAME_FORMAT, this->m_use_custom_filename_format);
 
 	obs_data_set_int(hadowplay_data, CONFIG_CUSTOM_FILENAME_SEPERATOR, this->m_custom_filename_seperator);
@@ -88,6 +90,8 @@ void Config::Load(obs_data_t *load_data)
 
 	this->m_include_screenshots = obs_data_get_bool(hadowplay_data, CONFIG_INCLUDE_SCREENSHOTS);
 
+	this->m_move_frame_timing = obs_data_get_bool(hadowplay_data, CONFIG_MOVE_FRAME_TIMING);
+
 	this->m_use_custom_filename_format = obs_data_get_bool(hadowplay_data, CONFIG_USE_CUSTOM_FILENAME_FORMAT);
 
 	this->m_custom_filename_seperator = (char)obs_data_get_int(hadowplay_data, CONFIG_CUSTOM_FILENAME_SEPERATOR);
@@ -130,6 +134,8 @@ void Config::SetDefaults(obs_data_t *hadowplay_data)
 	obs_data_set_default_bool(hadowplay_data, CONFIG_ENABLE_AUTO_ORGANISATION, true);
 
 	obs_data_set_default_bool(hadowplay_data, CONFIG_ENABLE_FOLDER_ORGANISATION, true);
+
+	obs_data_set_default_bool(hadowplay_data, CONFIG_MOVE_FRAME_TIMING, true);
 
 	obs_data_set_default_bool(hadowplay_data, CONFIG_USE_CUSTOM_FILENAME_FORMAT, true);
 

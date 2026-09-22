@@ -72,6 +72,8 @@ void SettingsDialog::showEvent(QShowEvent *event)
 
 	ui->include_screenshots_checkbox->setChecked(Config::Inst().m_include_screenshots);
 
+	ui->move_frame_timing_checkbox->setChecked(Config::Inst().m_move_frame_timing);
+
 	ui->custom_filename_groupbox->setChecked(Config::Inst().m_use_custom_filename_format);
 
 	ui->custom_filename_separator_textbox->setText(QString(Config::Inst().m_custom_filename_seperator));
@@ -110,6 +112,8 @@ void SettingsDialog::ApplyConfig()
 	Config::Inst().m_enable_folder_organisation = this->ui->folder_organisation_checkbox->isChecked();
 
 	Config::Inst().m_include_screenshots = this->ui->include_screenshots_checkbox->isChecked();
+
+	Config::Inst().m_move_frame_timing = this->ui->move_frame_timing_checkbox->isChecked();
 
 	Config::Inst().m_use_custom_filename_format = this->ui->custom_filename_groupbox->isChecked();
 
