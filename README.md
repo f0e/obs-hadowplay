@@ -7,6 +7,11 @@ In an attempt to move away from ShadowPlay and it's lack of customization, I tho
 This includes automatic replay buffer start/stop based on hooked captures within the active scene and the organisation of replays/recordings into folders named after the capture subject.
 
 ## Changelog
+* [fork] v2.4.0
+  * Post-save script (run a script on save)
+  * Desktop capture support (detects Desktop as a target)
+  * Support for moving frame timing logs
+
 * v2.3.0
   * Added configurable organised filename formats
   * Added toggle for folder organisation
